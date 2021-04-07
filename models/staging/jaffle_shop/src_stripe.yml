@@ -1,7 +1,25 @@
 version: 2
-
 sources:
   - name: stripe
+    description: An import of Stripe data.
     database: raw
     tables:
       - name: payment
+        description: Raw payment data.
+        loaded_at_field: _batched_at
+        freshness:
+          warn_after: {count: 12, period: day}
+          error_after: {count: 24, period: day}
+        columns:
+          - name: id
+            description: Primary key for payments
+            tests:
+              - unique
+              - not_null
+          - name: orderid
+            description: Foreign key for orders
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('orders')
+                  field: id
