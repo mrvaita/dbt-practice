@@ -1,15 +1,38 @@
 version: 2
 
 models:
+  - name: stg_payments
+    columns:
+      - name: id
+        description: The unique payment ID.
+      - name: order_id
+        description: The order ID associated to the payment
+        tests:
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: payment_method
+        description: "{{ doc('payment_method') }}"
+      - name: status
+        description: "{{ doc('payment_status') }}"
   - name: stg_customers
     columns: 
       - name: customer_id
+        description: The unique customer ID.
         tests:
           - unique
           - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: first_name
+        description: The customer name.
+      - name: last_name
+        description: The customer surname.
   - name: stg_orders
     columns: 
       - name: status
+        description: "{{ doc('order_status') }}"
         tests:
           - accepted_values:
               values:
@@ -19,7 +42,8 @@ models:
                 - placed
                 - return_pending
       - name: customer_id
-        tests:
-            - relationships:
-                to: ref('stg_customers')
-                field: customer_id
+        description: The ID of the customer who performed the order
+      - name: order_date
+        description: the date when the order was placed
+      - name: id
+        description: the unique ID of the order
